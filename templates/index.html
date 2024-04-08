@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %} Home {% endblock title %}
+{% block body %}
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <a class="navbar-brand" href="#">Home</a>
+        <div style="float:right">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user_data.name}}
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/logout">Sign Out</a></li>
+                </ul>
+            </li>
+        </div>
+        </div>
+    </nav>
+
+
+    <div class="container" style="margin-bottom: 70px; margin-top: 50px;">
+        <h4>Add Product</h4>
+        <form action="/add_product" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Product Name</label>
+                <input type="text" class="form-control" name="name" id="name">
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" name="price" id="price">
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Product Description</label>
+                <input type="text" class="form-control" name="description" id="description">
+            </div>
+            <button type="submit" class="btn btn-primary" style="float:right">Submit</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h4>All Products</h4>
+        {% if product_data|length==0 %}
+            <h6>No Records Found</h6>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Date Created</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in product_data %}
+                        <tr>
+                            <td><input class="form-check-input mt-0 check_product" type="checkbox" value="{{data.price}}"></td>
+                            <td scope="row">{{loop.index}}</td>
+                            <td>{{data.name}}</td>
+                            <td>{{data.price}}</td>
+                            <td>{{data.description}}</td>
+                            <td>{{data.created_at}}</td>
+                            <td>
+                                <a href="/update/{{data.id}}"><button class="btn btn-outlin-dark btn-sm btn-success" style="margin-right: 10px">Update</button></a>
+                                <a href="/delete/{{data.id}}"><button class="btn btn-outlin-dark btn-sm btn-warning">Delete</button></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button id="generate_bill" class="btn btn-sm btn-primary" style="float: left;">Generate Bill</button>
+            <h6 id="total_cost" style="display: none; text-align: center;"></h6>
+        {% endif %}
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+
+    <script>
+        $("#generate_bill").click(function(){
+
+            sum = 0;
+
+            $('.check_product:checkbox:checked').each(function () {
+
+                if(this.checked){
+                    var price = $(this).val();
+                    sum += parseInt(price);
+                }
+            });
+
+            if(sum == 0){
+                alert("Please select atleast one product");
+            }else{
+
+                var html = "Total cost: " + sum;
+                $("#total_cost").css("display", "block");
+                $("#total_cost").html(html);
+            }
+        })
+    </script>
+    
+{% endblock body %}
